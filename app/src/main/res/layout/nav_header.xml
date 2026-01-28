@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="176dp"
+    android:background="#0B1E2D"
+    android:gravity="bottom"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:theme="@style/ThemeOverlay.AppCompat.Dark">
+
+    <ImageView
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:contentDescription="Logo"
+        android:src="@android:drawable/sym_def_app_icon"
+        android:background="@android:color/white"
+        android:padding="10dp"
+        android:layout_marginBottom="16dp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Rick y Morty App"
+        android:textColor="#00FF9C"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Bienvenido explorador"
+        android:textColor="#FFEB3B"
+        android:textSize="14sp" />
+
+</LinearLayout>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/nav_episodes">
+
+    <fragment
+        android:id="@+id/nav_episodes"
+        android:name="com.example.rickymortyapp.ui.EpisodeListFragment"
+        android:label="Episodios"
+        tools:layout="@layout/fragment_episode_list">
+
+        <action
+            android:id="@+id/action_list_to_detail"
+            app:destination="@id/nav_episode_detail" />
+    </fragment>
+
+
+    <fragment
+        android:id="@+id/nav_stats"
+        android:name="com.example.rickymortyapp.ui.StatsFragment"
+        android:label="Estadísticas"
+        tools:layout="@layout/fragment_stats" />
+
+
+    <fragment
+        android:id="@+id/nav_settings"
+        android:name="com.example.rickymortyapp.ui.SettingsFragment"
+        android:label="Ajustes"
+        tools:layout="@layout/fragment_settings" />
+
+
+    <fragment
+        android:id="@+id/nav_episode_detail"
+        android:name="com.example.rickymortyapp.ui.EpisodeDetailFragment"
+        android:label="Detalle del Episodio"
+        tools:layout="@layout/fragment_episode_detail" />
+
+</navigation>

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "2661478699",
+    "project_id": "rickymortyapp-6437a",
+    "storage_bucket": "rickymortyapp-6437a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:2661478699:android:0553fc8c6335f8be19d56e",
+        "android_client_info": {
+          "package_name": "com.example.rickymortyapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAD1AUrqCxcxK7mWqhlxqa96nhGXZAOnoc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
