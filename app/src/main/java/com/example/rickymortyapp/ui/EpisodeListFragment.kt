@@ -22,6 +22,14 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
+/**
+ * Pantalla principal que muestra el listado de episodios.
+ * * Flujo de datos:
+ * 1. Descarga episodios de la API (Retrofit).
+ * 2. Descarga los IDs "vistos" de Firebase.
+ * 3. Fusiona ambas listas (merge) para marcar visualmente los vistos.
+ * * Funcionalidad extra: Selección múltiple y guardado por lotes (Batch Write).
+ */
 class EpisodeListFragment : Fragment() {
 
     private lateinit var recyclerView: RecyclerView
@@ -33,6 +41,7 @@ class EpisodeListFragment : Fragment() {
     private val db = FirebaseFirestore.getInstance()
     private val auth = FirebaseAuth.getInstance()
 
+    // Lista maestra para filtrar sin volver a pedir datos
     private var fullList: List<Episode> = emptyList()
 
     override fun onCreateView(
@@ -46,33 +55,29 @@ class EpisodeListFragment : Fragment() {
         rgFilter = view.findViewById(R.id.rgFilter)
         fabAction = view.findViewById(R.id.fabAction)
 
-        // CONFIGURAR ADAPTER CON LÓGICA DE SELECCIÓN
+        // Inicializamos el adaptador pasando las funciones lambda para los eventos
         adapter = EpisodeAdapter(
             episodes = emptyList(),
             onClick = { episode ->
-                // Click normal: Ir al detalle
+                // Navegación al detalle pasando el objeto Parcelable
                 val bundle = Bundle().apply {
                     putParcelable("episode_data", episode)
                 }
                 findNavController().navigate(R.id.action_list_to_detail, bundle)
             },
             onSelectionChanged = { isSelectionMode ->
-                // Mostrar u ocultar el botón flotante
-                if (isSelectionMode) {
-                    fabAction.visibility = View.VISIBLE
-                } else {
-                    fabAction.visibility = View.GONE
-                }
+                // Mostramos el FAB solo si hay elementos seleccionados
+                fabAction.visibility = if (isSelectionMode) View.VISIBLE else View.GONE
             }
         )
         recyclerView.adapter = adapter
 
-        // Listener del Filtro
+        // Listener para filtrado local (Todos / Vistos)
         rgFilter.setOnCheckedChangeListener { _, checkedId ->
             filterList(checkedId)
         }
 
-        // Listener del Botón Flotante (Guardar selección)
+        // Acción del FAB: Guardar selección en la nube
         fabAction.setOnClickListener {
             saveSelectedEpisodes()
         }
@@ -82,15 +87,18 @@ class EpisodeListFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
+        // Recargamos datos al volver (por si marcamos como visto en el detalle)
         loadEpisodes()
     }
 
     private fun loadEpisodes() {
         progressBar.visibility = View.VISIBLE
+        // 1. Petición asíncrona a la API
         RetrofitClient.apiService.getEpisodes(1).enqueue(object : Callback<EpisodeResponse> {
             override fun onResponse(call: Call<EpisodeResponse>, response: Response<EpisodeResponse>) {
                 if (response.isSuccessful) {
                     val apiList = response.body()?.results ?: emptyList()
+                    // 2. Si hay éxito, cruzamos datos con Firebase
                     mergeWithFirestore(apiList)
                 } else {
                     progressBar.visibility = View.GONE
@@ -99,6 +107,7 @@ class EpisodeListFragment : Fragment() {
 
             override fun onFailure(call: Call<EpisodeResponse>, t: Throwable) {
                 progressBar.visibility = View.GONE
+                // Aquí podríamos mostrar un layout de error de conexión
             }
         })
     }
@@ -112,22 +121,27 @@ class EpisodeListFragment : Fragment() {
             return
         }
 
+        // Consultamos la colección de vistos
         db.collection("users").document(userId).collection("viewed_episodes")
             .get()
             .addOnSuccessListener { documents ->
                 progressBar.visibility = View.GONE
+                // Creamos un Set de IDs para búsqueda rápida O(1)
                 val viewedIds = documents.map { it.id }.toSet()
 
+                // Recorremos la lista de la API y marcamos los que coincidan
                 apiEpisodes.forEach { episode ->
                     if (viewedIds.contains(episode.id.toString())) {
                         episode.isViewed = true
                     }
                 }
                 fullList = apiEpisodes
+                // Aplicamos el filtro actual (por defecto "Todos")
                 filterList(rgFilter.checkedRadioButtonId)
             }
             .addOnFailureListener {
                 progressBar.visibility = View.GONE
+                // Si falla Firebase, mostramos la lista tal cual viene de la API
                 fullList = apiEpisodes
                 adapter.updateList(fullList)
             }
@@ -135,6 +149,8 @@ class EpisodeListFragment : Fragment() {
 
     private fun filterList(checkedId: Int) {
         if (fullList.isEmpty()) return
+
+        // Filtrado en memoria (no requiere red)
         val listToShow = if (checkedId == R.id.rbViewed) {
             fullList.filter { it.isViewed }
         } else {
@@ -143,7 +159,10 @@ class EpisodeListFragment : Fragment() {
         adapter.updateList(listToShow)
     }
 
-    // --- LÓGICA DE GUARDADO MÚLTIPLE (BATCH) ---
+    /**
+     * Guarda múltiples episodios a la vez usando Firestore Batch.
+     * Esto es mucho más eficiente que hacer un loop de peticiones individuales.
+     */
     private fun saveSelectedEpisodes() {
         val userId = auth.currentUser?.uid ?: return
         val selectedEpisodes = adapter.getSelectedEpisodes()
@@ -152,7 +171,7 @@ class EpisodeListFragment : Fragment() {
 
         progressBar.visibility = View.VISIBLE
 
-        // Usamos un WriteBatch para guardar muchos de golpe (Eficiencia Firestore)
+        // Instancia de Batch (Lote de escritura)
         val batch = db.batch()
         val userRef = db.collection("users").document(userId)
         val episodesRef = userRef.collection("viewed_episodes")
@@ -160,8 +179,6 @@ class EpisodeListFragment : Fragment() {
         var markedCount = 0
 
         selectedEpisodes.forEach { episode ->
-            // Si ya estaba visto, no hacemos nada (o podríamos borrarlo si quisiéramos lógica inversa)
-            // Aquí asumimos que "Seleccionar" -> "Marcar como Visto"
             if (!episode.isViewed) {
                 val docRef = episodesRef.document(episode.id.toString())
                 val data = hashMapOf(
@@ -171,29 +188,27 @@ class EpisodeListFragment : Fragment() {
                     "air_date" to episode.airDate,
                     "viewed_at" to System.currentTimeMillis()
                 )
+                // Añadimos la operación al lote
                 batch.set(docRef, data, SetOptions.merge())
                 markedCount++
             }
         }
 
-        // Si no hay nada nuevo que marcar, solo limpiamos
         if (markedCount == 0) {
             progressBar.visibility = View.GONE
             adapter.clearSelection()
-            Toast.makeText(context, "No hay cambios pendientes", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, getString(R.string.detail_not_viewed_toast), Toast.LENGTH_SHORT).show()
             return
         }
 
-        // Ejecutar el lote
+        // Ejecutamos todas las escrituras de golpe (Commit)
         batch.commit().addOnSuccessListener {
             progressBar.visibility = View.GONE
-            Toast.makeText(context, "$markedCount episodios marcados como vistos", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "$markedCount episodios guardados", Toast.LENGTH_SHORT).show()
 
-            // Actualizar la lista local visualmente
+            // Actualizamos visualmente la lista local para reflejar el cambio inmediato
             selectedEpisodes.forEach { it.isViewed = true }
             adapter.clearSelection()
-
-            // Refrescar el filtro por si estamos en la pestaña "Vistos"
             filterList(rgFilter.checkedRadioButtonId)
 
         }.addOnFailureListener {

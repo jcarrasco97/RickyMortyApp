@@ -20,6 +20,10 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
+/**
+ * Fragmento de detalle. Muestra información extendida del episodio.
+ * Realiza una segunda llamada a la API para obtener los personajes específicos de este capítulo.
+ */
 class EpisodeDetailFragment : Fragment() {
 
     private lateinit var tvName: TextView
@@ -45,14 +49,18 @@ class EpisodeDetailFragment : Fragment() {
         switchViewed = view.findViewById(R.id.switchViewed)
         rvCharacters = view.findViewById(R.id.rvCharacters)
 
+        // Configuración del Grid para los personajes (3 columnas)
         rvCharacters.layoutManager = GridLayoutManager(context, 3)
         charAdapter = CharacterAdapter(emptyList())
         rvCharacters.adapter = charAdapter
 
+        // Recibimos el objeto Episode completo pasado desde el fragmento anterior
+        @Suppress("DEPRECATION") // getParcelable(key) está deprecado en API 33+, pero es seguro aquí.
         val episode = arguments?.getParcelable<Episode>("episode_data")
 
         if (episode != null) {
             setupUI(episode)
+            // Comprobamos en tiempo real si este episodio está marcado como visto en Firestore
             checkIfEpisodeIsViewed(episode.id.toString())
         }
 
@@ -64,6 +72,7 @@ class EpisodeDetailFragment : Fragment() {
         tvCode.text = episode.episode
         tvDate.text = episode.airDate
 
+        // Listener para marcar/desmarcar como visto
         switchViewed.setOnCheckedChangeListener { _, isChecked ->
             saveViewedState(episode, isChecked)
         }
@@ -71,6 +80,10 @@ class EpisodeDetailFragment : Fragment() {
         loadCharacters(episode.characters)
     }
 
+    /**
+     * Extrae los IDs de las URLs de los personajes y hace una petición a la API.
+     * Ejemplo URLs: [".../character/1", ".../character/2"] -> Petición: "character/1,2"
+     */
     private fun loadCharacters(urls: List<String>) {
         if (urls.isEmpty()) return
 
@@ -90,7 +103,7 @@ class EpisodeDetailFragment : Fragment() {
             }
 
             override fun onFailure(call: Call<List<com.example.rickymortyapp.models.Character>>, t: Throwable) {
-                // Silencio
+                // Fallo silencioso en la UI, podríamos mostrar un Toast si fuera crítico.
             }
         })
     }
@@ -102,9 +115,13 @@ class EpisodeDetailFragment : Fragment() {
             .collection("viewed_episodes").document(episodeId)
             .get()
             .addOnSuccessListener { document ->
+                // IMPORTANTE: Quitamos el listener temporalmente para evitar bucles infinitos
+                // al establecer el estado inicial del switch.
                 switchViewed.setOnCheckedChangeListener(null)
                 switchViewed.isChecked = document.exists()
 
+                // Reactivamos el listener con los datos actualizados
+                @Suppress("DEPRECATION")
                 val episode = arguments?.getParcelable<Episode>("episode_data")
                 if (episode != null) {
                     switchViewed.setOnCheckedChangeListener { _, isChecked ->
@@ -120,6 +137,7 @@ class EpisodeDetailFragment : Fragment() {
         val episodeDocRef = userDocRef.collection("viewed_episodes").document(episode.id.toString())
 
         if (isViewed) {
+            // Guardamos metadatos básicos para poder consultarlos luego sin llamar a la API
             val data = hashMapOf(
                 "id" to episode.id,
                 "name" to episode.name,
@@ -127,15 +145,15 @@ class EpisodeDetailFragment : Fragment() {
                 "air_date" to episode.airDate,
                 "viewed_at" to System.currentTimeMillis()
             )
+            // SetOptions.merge() evita sobrescribir campos si existieran otros
             episodeDocRef.set(data, SetOptions.merge())
                 .addOnSuccessListener {
-                    // CORREGIDO: Mensaje traducible
                     Toast.makeText(context, getString(R.string.detail_viewed_toast), Toast.LENGTH_SHORT).show()
                 }
         } else {
+            // Si desmarcamos, borramos el documento de la colección
             episodeDocRef.delete()
                 .addOnSuccessListener {
-                    // CORREGIDO: Mensaje traducible
                     Toast.makeText(context, getString(R.string.detail_not_viewed_toast), Toast.LENGTH_SHORT).show()
                 }
         }

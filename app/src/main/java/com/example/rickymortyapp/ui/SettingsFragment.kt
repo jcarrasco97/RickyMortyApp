@@ -17,6 +17,11 @@ import com.example.rickymortyapp.R
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.firebase.auth.FirebaseAuth
 
+/**
+ * Fragmento de configuración.
+ * Permite cambiar el tema (Claro/Oscuro), el idioma (ES/EN) y cerrar sesión.
+ * Utiliza SharedPreferences para persistir las elecciones del usuario.
+ */
 class SettingsFragment : Fragment() {
 
     private lateinit var switchDarkMode: SwitchMaterial
@@ -41,24 +46,21 @@ class SettingsFragment : Fragment() {
         rbEnglish = view.findViewById(R.id.rbEnglish)
         btnLogout = view.findViewById(R.id.btnLogoutSettings)
 
-        // 1. Cargar estado visual
+        // Cargamos las preferencias guardadas antes de activar los listeners
         loadSavedPreferences()
-
-        // 2. Activar listeners
         setupListeners()
 
         return view
     }
 
     private fun loadSavedPreferences() {
-        // Cargar Tema
         val isDark = prefs.getBoolean("dark_mode", true)
-        switchDarkMode.setOnCheckedChangeListener(null) // Pausar listener
+        // Desactivamos listener para evitar disparos accidentales al setear el valor inicial
+        switchDarkMode.setOnCheckedChangeListener(null)
         switchDarkMode.isChecked = isDark
 
-        // Cargar Idioma
         val language = prefs.getString("language", "es")
-        rgLanguage.setOnCheckedChangeListener(null) // Pausar listener
+        rgLanguage.setOnCheckedChangeListener(null)
         if (language == "en") {
             rbEnglish.isChecked = true
         } else {
@@ -67,7 +69,7 @@ class SettingsFragment : Fragment() {
     }
 
     private fun setupListeners() {
-        // --- MODO OSCURO ---
+        // Listener Modo Oscuro
         switchDarkMode.setOnClickListener {
             val isChecked = switchDarkMode.isChecked
             prefs.edit().putBoolean("dark_mode", isChecked).apply()
@@ -79,30 +81,27 @@ class SettingsFragment : Fragment() {
             }
         }
 
-        // --- IDIOMA ---
+        // Listener Idioma
         rgLanguage.setOnCheckedChangeListener { _, checkedId ->
-            // Determinar qué idioma ha seleccionado el usuario
             val selectedLang = if (checkedId == R.id.rbEnglish) "en" else "es"
-
-            // Leer el idioma que teníamos guardado
             val currentLang = prefs.getString("language", "es")
 
-            // Solo actuamos si son diferentes (para evitar bucles)
+            // Solo actuamos si el idioma ha cambiado realmente
             if (selectedLang != currentLang) {
-                // 1. Guardamos de forma SÍNCRONA (commit) para asegurar que se escribe YA
+                // Guardamos síncronamente (commit) para asegurar que el dato está escrito antes de reiniciar
                 prefs.edit().putString("language", selectedLang).commit()
 
-                // 2. Reiniciamos la actividad.
-                // Como hemos modificado MainActivity.attachBaseContext,
-                // al renacer leerá el nuevo idioma automáticamente.
+                // Reiniciamos la Activity para que el nuevo ContextWrapper (attachBaseContext)
+                // cargue los recursos en el nuevo idioma.
                 requireActivity().recreate()
             }
         }
 
-        // --- LOGOUT ---
+        // Logout
         btnLogout.setOnClickListener {
             FirebaseAuth.getInstance().signOut()
             val intent = Intent(requireContext(), LoginActivity::class.java)
+            // Limpiamos la pila de actividades (flags) para impedir volver atrás
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)
         }

@@ -20,6 +20,11 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
+/**
+ * Fragmento de estadísticas.
+ * Calcula el porcentaje de episodios vistos comparando el total (API)
+ * con los guardados en Firestore. Muestra el resultado en un gráfico circular.
+ */
 class StatsFragment : Fragment() {
 
     private lateinit var tvSummary: TextView
@@ -46,6 +51,7 @@ class StatsFragment : Fragment() {
     }
 
     private fun setupChartDesign() {
+        // Configuración visual del gráfico MPAndroidChart
         pieChart.setUsePercentValues(true)
         pieChart.description.isEnabled = false
         pieChart.legend.isEnabled = false
@@ -56,17 +62,18 @@ class StatsFragment : Fragment() {
     }
 
     private fun loadData() {
+        // 1. Obtenemos el total de episodios de la API (campo info.count)
         RetrofitClient.apiService.getEpisodes(1).enqueue(object : Callback<EpisodeResponse> {
             override fun onResponse(call: Call<EpisodeResponse>, response: Response<EpisodeResponse>) {
                 if (response.isSuccessful) {
                     val totalEpisodes = response.body()?.info?.count ?: 0
+                    // Una vez tenemos el total, consultamos cuántos ha visto el usuario
                     getViewedCount(totalEpisodes)
                 }
             }
 
             override fun onFailure(call: Call<EpisodeResponse>, t: Throwable) {
-                // CORREGIDO: Usamos R.string.stats_error
-                if (isAdded) { // Comprobamos isAdded para evitar crash si el fragmento se cerró
+                if (isAdded) {
                     tvSummary.text = getString(R.string.stats_error)
                 }
             }
@@ -83,7 +90,6 @@ class StatsFragment : Fragment() {
                 updateUI(viewed, total)
             }
             .addOnFailureListener {
-                // CORREGIDO: Usamos R.string.stats_error
                 if (isAdded) {
                     tvSummary.text = getString(R.string.stats_error)
                 }
@@ -91,33 +97,32 @@ class StatsFragment : Fragment() {
     }
 
     private fun updateUI(viewed: Int, total: Int) {
-        if (!isAdded) return // Seguridad
+        if (!isAdded) return
 
+        // Cálculos matemáticos básicos para mostrar porcentaje
         val notViewed = total - viewed
         val percentage = if (total > 0) (viewed * 100) / total else 0
 
-        // CORREGIDO: Usamos getString con placeholders %1$d y %2$d
+        // Usamos String Templates con placeholders para soportar traducción correcta
         tvSummary.text = getString(R.string.stats_summary, viewed, total)
         tvPercentage.text = "$percentage%"
 
+        // Preparación de datos para el gráfico
         val entries = ArrayList<PieEntry>()
-        // CORREGIDO: Usamos textos traducibles para el gráfico
-        entries.add(PieEntry(viewed.toFloat(), getString(R.string.filter_viewed))) // Vistos
-        entries.add(PieEntry(notViewed.toFloat(), getString(R.string.filter_all))) // Restantes (Usamos 'Todos' o 'Pendientes' si creaste string)
+        entries.add(PieEntry(viewed.toFloat(), getString(R.string.filter_viewed)))
+        entries.add(PieEntry(notViewed.toFloat(), getString(R.string.filter_all)))
 
         val dataSet = PieDataSet(entries, getString(R.string.stats_title))
-
         dataSet.colors = listOf(
-            Color.parseColor("#00FF9C"),
-            Color.parseColor("#444444")
+            Color.parseColor("#00FF9C"), // Verde
+            Color.parseColor("#444444")  // Gris
         )
-
         dataSet.valueTextColor = Color.WHITE
         dataSet.valueTextSize = 14f
 
         val data = PieData(dataSet)
         pieChart.data = data
-        pieChart.invalidate()
-        pieChart.animateY(1400)
+        pieChart.invalidate() // Forzamos repintado del gráfico
+        pieChart.animateY(1400) // Animación de entrada
     }
 }
