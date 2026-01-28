@@ -75,7 +75,7 @@ Para los curiosos, este es el stack técnico que he utilizado:
 
 Este proyecto ha sido una gran oportunidad para consolidar todo lo aprendido durante el curso. Me he pegado bastante con la sincronización de hilos (evitar bloquear el Main Thread) y con el ciclo de vida de los Fragmentos al cambiar el idioma, pero estoy muy contento con el resultado final.
 
-Espero que os guste. ¡Wubba Lubba Dub Dub! 🥒
+Espero que os guste. ¡Wubba Lubba Dub Dub!
 
 **Juan Antonio Carrasco Sánchez**
 IES Aguadulce - Curso 2025/26
