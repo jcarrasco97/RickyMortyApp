@@ -2,21 +2,21 @@
 
 ¡Hola! Soy **Juan Carrasco**, alumno del ciclo de **Desarrollo de Aplicaciones Multiplataforma (DAM)** en modalidad a distancia en el **IES Aguadulce**.
 
-Este repositorio contiene mi proyecto número 3 para el módulo de Programación Multimedia. El objetivo era crear una aplicación completa que consumiera una API externa, gestionara usuarios y permitiera persistencia de datos en la nube. He elegido la temática de *Rick y Morty* no solo porque la API es excelente para aprender, sino porque visualmente permite jugar mucho con los estilos.
+Este repositorio contiene mi proyecto número 3 para el módulo de Programación Multimedia. El objetivo era crear una aplicación completa que consumiera una API externa, gestionara usuarios y permitiera persistencia de datos en la nube. La temática de *Rick y Morty* no es solo buena porque la API es excelente para aprender, sino porque visualmente permite jugar mucho con los estilos.
 
 ---
 
 ## ¿De qué va el proyecto?
 
-La aplicación es una especie de "Pasaporte de Aventuras" para los fans de la serie. Básicamente, permite ver el listado de episodios y marcar cuáles has visto. Pero no quería que fuera una lista simple, así que le he metido bastante "cariño" a la experiencia de usuario (UX) y a las funcionalidades extra.
+La aplicación es una especie de "Agenda de Episodios" para los fans de la serie. Básicamente, permite ver el listado de episodios y marcar cuáles has visto. Pero no quería que fuera una lista simple, así que le he metido algunas funcionalidades a la experiencia de usuario (UX) y a las funcionalidades extra.
 
 ### Lo que hace la app (y cómo lo he montado):
 
 1.  **Conexión con la API (Retrofit):**
-    La app se conecta a `rickandmortyapi.com` para traer los episodios paginados. Al principio tuve dudas sobre cómo gestionar la carga de imágenes, pero finalmente opté por **Glide**, que gestiona la caché de maravilla y hace que el scroll sea fluido.
+    La app se conecta a `rickandmortyapi.com` para traer los episodios "paginados". La práctiva pedía usar **Glide**, que gestiona la caché de maravilla y hace que el scroll sea fluido.
 
 2.  **Gestión de Usuarios (Firebase):**
-    Para que cada usuario tenga su propia lista de "vistos", he implementado un sistema de Login y Registro completo usando **Firebase Authentication**.
+    Para que cada usuario tenga su propia lista de "vistos", he implementado un sistema de Login y Registro completo usando **Firebase Authentication**, requisito de la práctica.
     
 3.  **Base de Datos en Tiempo Real (Firestore):**
     Aquí está el "corazón" de la app. Cuando marcas un episodio como visto, no se guarda en el móvil, sino en una colección de Firestore vinculada a tu ID de usuario. Esto permite que si desinstalas la app y vuelves a entrar, tus datos siguen ahí.
@@ -53,13 +53,13 @@ Además de los requisitos básicos, quise ir un poco más allá para asegurar un
 
 | Estadísticas | Ajustes (Modo Claro) | Selección Múltiple |
 |:---:|:---:|:---:|
-| ![Stats](screenshots/stats.png) | ![Settings](screenshots/settings_light.png) | ![Batch](screenshots/batch.png) |
+| ![Stats](screenshots/stats.png) | ![Settings](screenshots/settings.png) | ![Batch](screenshots/batch.png) |
 
 ---
 
 ## Tecnologías y Librerías
 
-Para los curiosos, este es el stack técnico que he utilizado:
+Para más información, este es el stack técnico que he utilizado:
 
 * **Lenguaje:** Kotlin (100%).
 * **Arquitectura:** MVC con separación de responsabilidades (UI, Models, Network).
@@ -75,7 +75,7 @@ Para los curiosos, este es el stack técnico que he utilizado:
 
 Este proyecto ha sido una gran oportunidad para consolidar todo lo aprendido durante el curso. Me he pegado bastante con la sincronización de hilos (evitar bloquear el Main Thread) y con el ciclo de vida de los Fragmentos al cambiar el idioma, pero estoy muy contento con el resultado final.
 
-Espero que os guste. ¡Wubba Lubba Dub Dub! 🥒
+Espero que os guste. ¡Wubba Lubba Dub Dub!
 
 **Juan Antonio Carrasco Sánchez**
 IES Aguadulce - Curso 2025/26
