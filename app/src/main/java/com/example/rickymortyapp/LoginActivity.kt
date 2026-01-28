@@ -51,22 +51,8 @@ class LoginActivity : AppCompatActivity() {
 
         // Configurar botón REGISTRO
         btnRegister.setOnClickListener {
-            val email = etEmail.text.toString()
-            val password = etPassword.text.toString()
-
-            if (email.isNotEmpty() && password.isNotEmpty()) {
-                auth.createUserWithEmailAndPassword(email, password)
-                    .addOnCompleteListener { task ->
-                        if (task.isSuccessful) {
-                            showAlert("¡Usuario registrado! Ahora inicia sesión.")
-                            // Opcional: Podrías ir directo a Home, pero mejor que se loguee
-                        } else {
-                            showAlert("Error al registrar: ${task.exception?.message}")
-                        }
-                    }
-            } else {
-                showAlert("Rellena todos los campos")
-            }
+            val intent = Intent(this, RegisterActivity::class.java)
+            startActivity(intent)
         }
     }
 

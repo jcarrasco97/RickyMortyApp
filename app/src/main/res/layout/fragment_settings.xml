@@ -4,14 +4,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#0B1E2D"
+    android:background="@color/app_background"
     android:padding="32dp">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="AJUSTES"
-        android:textColor="#00FF9C"
+        android:text="@string/settings_title"
+        android:textColor="@color/primary_text"
         android:textSize="28sp"
         android:textStyle="bold"
         android:layout_marginBottom="48dp"/>
@@ -19,8 +19,8 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Idioma"
-        android:textColor="#FFFFFF"
+        android:text="@string/settings_language"
+        android:textColor="@color/primary_text"
         android:textSize="18sp"
         android:layout_marginBottom="16dp"/>
 
@@ -35,18 +35,18 @@
             android:id="@+id/rbSpanish"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Español (ES)"
-            android:textColor="#AAAAAA"
-            android:buttonTint="#00FF9C"
+            android:text="@string/settings_spanish"
+            android:textColor="@color/secondary_text"
+            android:buttonTint="@color/rick_green"
             android:layout_marginEnd="24dp"/>
 
         <RadioButton
             android:id="@+id/rbEnglish"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="English (EN)"
-            android:textColor="#AAAAAA"
-            android:buttonTint="#00FF9C"/>
+            android:text="@string/settings_english"
+            android:textColor="@color/secondary_text"
+            android:buttonTint="@color/rick_green"/>
     </RadioGroup>
 
     <LinearLayout
@@ -60,25 +60,25 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Modo Oscuro"
-            android:textColor="#FFFFFF"
+            android:text="@string/settings_dark_mode"
+            android:textColor="@color/primary_text"
             android:textSize="18sp"/>
 
         <com.google.android.material.switchmaterial.SwitchMaterial
             android:id="@+id/switchDarkMode"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:thumbTint="#00FF9C"
-            app:trackTint="#555555"/>
+            app:thumbTint="@color/rick_green"
+            app:trackTint="@color/secondary_text"/>
     </LinearLayout>
 
     <Button
         android:id="@+id/btnLogoutSettings"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Cerrar sesión"
-        android:backgroundTint="#FFEB3B"
-        android:textColor="#0B1E2D"
+        android:text="@string/menu_logout"
+        android:backgroundTint="@color/rick_yellow"
+        android:textColor="@color/rick_blue"
         android:textStyle="bold"/>
 
 </LinearLayout>

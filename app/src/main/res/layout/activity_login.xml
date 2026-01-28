@@ -3,49 +3,56 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="32dp"
     android:gravity="center"
-    android:background="#0B1E2D"> <TextView
+    android:padding="32dp"
+    android:background="@color/app_background"> <TextView
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:text="RICK Y MORTY\nAPP"
-    android:textColor="#00FF9C"
-    android:textSize="30sp"
-    android:textStyle="bold"
-    android:gravity="center"
-    android:layout_marginBottom="48dp"/>
+    android:text="LOGO"
+    android:textColor="@color/primary_text"
+    android:textSize="32sp"
+    android:layout_marginBottom="48dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/login_title"
+        android:textColor="@color/primary_text"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="32dp"/>
 
     <EditText
         android:id="@+id/etEmail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Email"
-        android:textColor="#FFFFFF"
-        android:textColorHint="#AAAAAA"
+        android:hint="@string/hint_email"
+        android:textColor="@color/primary_text"
+        android:textColorHint="@color/secondary_text"
         android:inputType="textEmailAddress"
         android:minHeight="48dp"
-        android:backgroundTint="#00FF9C"
+        android:backgroundTint="@color/rick_green"
         android:layout_marginBottom="16dp"/>
 
     <EditText
         android:id="@+id/etPassword"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Contraseña"
-        android:textColor="#FFFFFF"
-        android:textColorHint="#AAAAAA"
+        android:hint="@string/hint_password"
+        android:textColor="@color/primary_text"
+        android:textColorHint="@color/secondary_text"
         android:inputType="textPassword"
         android:minHeight="48dp"
-        android:backgroundTint="#00FF9C"
+        android:backgroundTint="@color/rick_green"
         android:layout_marginBottom="24dp"/>
 
     <Button
         android:id="@+id/btnLogin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Iniciar Sesión"
-        android:backgroundTint="#00FF9C"
-        android:textColor="#0B1E2D"
+        android:text="@string/btn_login"
+        android:backgroundTint="@color/rick_green"
+        android:textColor="@color/rick_blue"
         android:textStyle="bold"
         android:layout_marginBottom="16dp"/>
 
@@ -53,8 +60,11 @@
         android:id="@+id/btnRegister"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Registrarse"
-        android:backgroundTint="#FFFFFF"
-        android:textColor="#0B1E2D"/>
+        android:text="@string/btn_register"
+        android:backgroundTint="#00000000"
+        android:textColor="@color/secondary_text"
+        android:stateListAnimator="@null"
+        android:elevation="0dp"
+        android:padding="0dp"/>
 
 </LinearLayout>

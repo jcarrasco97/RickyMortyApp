@@ -1,5 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
+    <color name="rick_blue">#0B1E2D</color>
+    <color name="rick_green">#00FF9C</color>
+    <color name="rick_yellow">#FFEB3B</color>
+
+    <color name="app_background">#FFFFFF</color>       <color name="primary_text">#0B1E2D</color>         <color name="secondary_text">#555555</color>       <color name="card_background">#F0F0F0</color>      <color name="input_background">#E0E0E0</color>     <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+
+    <color name="purple_200">#00FF9C</color>
+    <color name="purple_500">#0B1E2D</color>
+    <color name="purple_700">#050F16</color>
+    <color name="teal_200">#FFEB3B</color>
+    <color name="teal_700">#FFC107</color>
 </resources>

@@ -3,20 +3,70 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#0B1E2D">
+    android:background="@color/app_background">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvEpisodes"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        android:padding="8dp"/>
+        android:orientation="vertical">
+
+        <RadioGroup
+            android:id="@+id/rgFilter"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:orientation="horizontal"
+            android:layout_margin="16dp"
+            android:background="@drawable/bg_rounded_border"
+            android:checkedButton="@+id/rbAll">
+
+            <RadioButton
+                android:id="@+id/rbAll"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="@string/filter_all"
+                android:gravity="center"
+                android:textColor="@color/selector_text_color"
+                android:button="@null"
+                android:background="@drawable/selector_tab_background"/>
+
+            <RadioButton
+                android:id="@+id/rbViewed"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="@string/filter_viewed"
+                android:gravity="center"
+                android:textColor="@color/selector_text_color"
+                android:button="@null"
+                android:background="@drawable/selector_tab_background"/>
+        </RadioGroup>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvEpisodes"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            android:padding="8dp"/>
+    </LinearLayout>
 
     <ProgressBar
         android:id="@+id/progressBar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark"/>
+        android:visibility="gone"/>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabAction"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="24dp"
+        android:src="@android:drawable/ic_menu_view"
+        app:backgroundTint="@color/rick_green"
+        app:tint="@color/rick_blue"
+        android:visibility="gone"
+        android:contentDescription="Marcar seleccionados" />
 
 </FrameLayout>

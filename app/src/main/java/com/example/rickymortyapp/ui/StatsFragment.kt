@@ -46,29 +46,29 @@ class StatsFragment : Fragment() {
     }
 
     private fun setupChartDesign() {
-        // Configuración visual básica del gráfico (sin datos aún)
         pieChart.setUsePercentValues(true)
         pieChart.description.isEnabled = false
         pieChart.legend.isEnabled = false
-        pieChart.setHoleColor(Color.TRANSPARENT) // Agujero transparente
+        pieChart.setHoleColor(Color.TRANSPARENT)
         pieChart.holeRadius = 40f
         pieChart.transparentCircleRadius = 45f
         pieChart.setEntryLabelColor(Color.BLACK)
     }
 
     private fun loadData() {
-        // 1. OBTENER TOTAL DE EPISODIOS (API)
         RetrofitClient.apiService.getEpisodes(1).enqueue(object : Callback<EpisodeResponse> {
             override fun onResponse(call: Call<EpisodeResponse>, response: Response<EpisodeResponse>) {
                 if (response.isSuccessful) {
                     val totalEpisodes = response.body()?.info?.count ?: 0
-                    // Una vez tenemos el total, pedimos los vistos
                     getViewedCount(totalEpisodes)
                 }
             }
 
             override fun onFailure(call: Call<EpisodeResponse>, t: Throwable) {
-                tvSummary.text = "Error de conexión"
+                // CORREGIDO: Usamos R.string.stats_error
+                if (isAdded) { // Comprobamos isAdded para evitar crash si el fragmento se cerró
+                    tvSummary.text = getString(R.string.stats_error)
+                }
             }
         })
     }
@@ -76,7 +76,6 @@ class StatsFragment : Fragment() {
     private fun getViewedCount(total: Int) {
         val userId = auth.currentUser?.uid ?: return
 
-        // 2. OBTENER VISTOS (FIREBASE)
         db.collection("users").document(userId).collection("viewed_episodes")
             .get()
             .addOnSuccessListener { documents ->
@@ -84,30 +83,33 @@ class StatsFragment : Fragment() {
                 updateUI(viewed, total)
             }
             .addOnFailureListener {
-                tvSummary.text = "Error al cargar estadísticas"
+                // CORREGIDO: Usamos R.string.stats_error
+                if (isAdded) {
+                    tvSummary.text = getString(R.string.stats_error)
+                }
             }
     }
 
     private fun updateUI(viewed: Int, total: Int) {
-        // Calcular porcentaje
+        if (!isAdded) return // Seguridad
+
         val notViewed = total - viewed
         val percentage = if (total > 0) (viewed * 100) / total else 0
 
-        // Actualizar Textos
-        tvSummary.text = "Has visto $viewed de $total episodios"
+        // CORREGIDO: Usamos getString con placeholders %1$d y %2$d
+        tvSummary.text = getString(R.string.stats_summary, viewed, total)
         tvPercentage.text = "$percentage%"
 
-        // Crear datos para el gráfico
         val entries = ArrayList<PieEntry>()
-        entries.add(PieEntry(viewed.toFloat(), "Vistos"))
-        entries.add(PieEntry(notViewed.toFloat(), "Pendientes"))
+        // CORREGIDO: Usamos textos traducibles para el gráfico
+        entries.add(PieEntry(viewed.toFloat(), getString(R.string.filter_viewed))) // Vistos
+        entries.add(PieEntry(notViewed.toFloat(), getString(R.string.filter_all))) // Restantes (Usamos 'Todos' o 'Pendientes' si creaste string)
 
-        val dataSet = PieDataSet(entries, "Resultados")
+        val dataSet = PieDataSet(entries, getString(R.string.stats_title))
 
-        // Colores: Verde Neon (#00FF9C) y Gris Oscuro (#444444)
         dataSet.colors = listOf(
-            Color.parseColor("#00FF9C"), // Vistos
-            Color.parseColor("#444444")  // No vistos
+            Color.parseColor("#00FF9C"),
+            Color.parseColor("#444444")
         )
 
         dataSet.valueTextColor = Color.WHITE
@@ -115,7 +117,7 @@ class StatsFragment : Fragment() {
 
         val data = PieData(dataSet)
         pieChart.data = data
-        pieChart.invalidate() // Refrescar gráfico
-        pieChart.animateY(1400) // Animación chula
+        pieChart.invalidate()
+        pieChart.animateY(1400)
     }
 }

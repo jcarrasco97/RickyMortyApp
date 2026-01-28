@@ -1,4 +1,4 @@
-package com.example.rickymortyapp // TU PAQUETE
+package com.example.rickymortyapp
 
 import android.content.Context
 import android.content.Intent
@@ -25,19 +25,17 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private lateinit var toolbar: Toolbar
     private val auth = FirebaseAuth.getInstance()
 
-    // 1. AQUÍ ES DONDE SE APLICA EL IDIOMA DE FORMA MODERNA
-    // Se ejecuta antes de onCreate para inyectar la configuración correcta
+    // --- LA CLAVE: Esto configura el idioma ANTES de que la App arranque ---
     override fun attachBaseContext(newBase: Context) {
         val prefs = newBase.getSharedPreferences("app_settings", Context.MODE_PRIVATE)
         val language = prefs.getString("language", "es") ?: "es"
 
-        // Creamos la configuración con el idioma guardado
         val locale = Locale(language)
         val config = Configuration(newBase.resources.configuration)
         Locale.setDefault(locale)
         config.setLocale(locale)
 
-        // Creamos un nuevo contexto con esa configuración
+        // Creamos un contexto nuevo con el idioma forzado
         val context = newBase.createConfigurationContext(config)
         super.attachBaseContext(context)
     }
@@ -45,7 +43,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // 2. APLICAR TEMA (Esto sí puede ir en onCreate)
+        // Aplicar Tema Oscuro/Claro
         val prefs = getSharedPreferences("app_settings", MODE_PRIVATE)
         val isDark = prefs.getBoolean("dark_mode", true)
         if (isDark) {
@@ -56,15 +54,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         setContentView(R.layout.activity_main)
 
-        // 3. Inicializar vistas
+        // Inicializar vistas
         drawerLayout = findViewById(R.id.drawer_layout)
         navigationView = findViewById(R.id.nav_view)
         toolbar = findViewById(R.id.toolbar)
 
-        // 4. Configurar Toolbar
         setSupportActionBar(toolbar)
 
-        // 5. Configurar el Toggle (Hamburguesa)
         val toggle = ActionBarDrawerToggle(
             this, drawerLayout, toolbar,
             R.string.navigation_drawer_open, R.string.navigation_drawer_close
@@ -72,56 +68,45 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
 
-        // 6. Configurar navegación
         val navHostFragment = supportFragmentManager
             .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         val navController = navHostFragment.navController
 
-        // Vincula menú con grafo automáticamente
         NavigationUI.setupWithNavController(navigationView, navController)
-
-        // 7. Listener manual para controlar Logout y Acerca De
         navigationView.setNavigationItemSelectedListener(this)
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
+        val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+        val navController = navHostFragment.navController
 
-            // --- AQUÍ VA EL BOTÓN ACERCA DE ---
+        when (item.itemId) {
+            R.id.nav_episodes -> {
+                navController.popBackStack(R.id.nav_episodes, false)
+                navController.navigate(R.id.nav_episodes)
+            }
             R.id.nav_about -> {
                 showAboutDialog()
             }
-
-            // --- BOTÓN CERRAR SESIÓN ---
             R.id.nav_logout -> {
                 auth.signOut()
                 val intent = Intent(this, LoginActivity::class.java)
                 startActivity(intent)
                 finish()
             }
-
-            // --- RESTO DE OPCIONES (Navegación normal) ---
             else -> {
-                val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
-                val navController = navHostFragment.navController
-                // Si NavigationUI no lo maneja, cerramos el drawer nosotros
                 NavigationUI.onNavDestinationSelected(item, navController)
             }
         }
-
-        // Cerrar menú siempre después de pulsar
         drawerLayout.closeDrawer(GravityCompat.START)
         return true
     }
 
-    // Función para mostrar el diálogo de Acerca De
     private fun showAboutDialog() {
         AlertDialog.Builder(this)
-            .setTitle("Acerca de")
-            .setMessage("Rick y Morty App\n\nDesarrollado por: Juan Carrasco\nVersión: 1.0.0\n\nCurso 2025/26")
-            .setPositiveButton("Cerrar") { dialog, _ ->
-                dialog.dismiss()
-            }
+            .setTitle(getString(R.string.menu_about))
+            .setMessage("Rick and Morty App\n\nVersión: 1.0.0\n\nCurso 2025/26")
+            .setPositiveButton("OK") { dialog, _ -> dialog.dismiss() }
             .create()
             .show()
     }

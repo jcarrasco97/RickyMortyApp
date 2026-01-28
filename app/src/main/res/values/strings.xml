@@ -1,7 +1,43 @@
 <resources>
-    <string name="app_name">RickyMortyApp</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="app_name">Rick y Morty App</string>
     <string name="navigation_drawer_open">Abrir menú</string>
     <string name="navigation_drawer_close">Cerrar menú</string>
+
+    <string name="menu_episodes">Episodios</string>
+    <string name="menu_stats">Estadísticas</string>
+    <string name="menu_settings">Ajustes</string>
+    <string name="menu_info">Información</string>
+    <string name="menu_about">Acerca de</string>
+    <string name="menu_account">Cuenta</string>
+    <string name="menu_logout">Cerrar sesión</string>
+
+    <string name="login_title">INICIAR SESIÓN</string>
+    <string name="register_title">CREAR CUENTA</string>
+    <string name="btn_login">Entrar</string>
+    <string name="btn_register">Registrarse</string>
+    <string name="btn_back_login">Volver a Login</string>
+    <string name="hint_email">Correo electrónico</string>
+    <string name="hint_password">Contraseña</string>
+    <string name="toast_login_success">¡Bienvenido!</string>
+    <string name="toast_login_error">Error de autenticación</string>
+    <string name="toast_fill_fields">Rellena todos los campos</string>
+
+    <string name="filter_all">Todos</string>
+    <string name="filter_viewed">Vistos</string>
+    <string name="loading">Cargando...</string>
+
+    <string name="stats_title">TU PROGRESO</string>
+    <string name="stats_summary">Has visto %1$d de %2$d episodios</string>
+    <string name="stats_error">Error al cargar datos</string>
+
+    <string name="settings_title">AJUSTES</string>
+    <string name="settings_language">Idioma</string>
+    <string name="settings_dark_mode">Modo Oscuro</string>
+    <string name="settings_spanish">Español (ES)</string>
+    <string name="settings_english">Inglés (EN)</string>
+
+    <string name="detail_characters">Personajes</string>
+    <string name="detail_mark_viewed">Marcar como visto</string>
+    <string name="detail_viewed_toast">Marcado como visto</string>
+    <string name="detail_not_viewed_toast">Marcado como NO visto</string>
 </resources>

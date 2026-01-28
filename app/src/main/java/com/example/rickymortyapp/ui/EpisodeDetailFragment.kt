@@ -7,12 +7,18 @@ import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.rickymortyapp.R
 import com.example.rickymortyapp.models.Episode
+import com.example.rickymortyapp.network.RetrofitClient
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class EpisodeDetailFragment : Fragment() {
 
@@ -21,7 +27,9 @@ class EpisodeDetailFragment : Fragment() {
     private lateinit var tvDate: TextView
     private lateinit var switchViewed: SwitchMaterial
 
-    // Instancias de Firebase
+    private lateinit var rvCharacters: RecyclerView
+    private lateinit var charAdapter: CharacterAdapter
+
     private val db = FirebaseFirestore.getInstance()
     private val auth = FirebaseAuth.getInstance()
 
@@ -35,13 +43,17 @@ class EpisodeDetailFragment : Fragment() {
         tvCode = view.findViewById(R.id.tvDetailCode)
         tvDate = view.findViewById(R.id.tvDetailDate)
         switchViewed = view.findViewById(R.id.switchViewed)
+        rvCharacters = view.findViewById(R.id.rvCharacters)
 
-        // Recuperar el episodio que nos pasó la lista
+        rvCharacters.layoutManager = GridLayoutManager(context, 3)
+        charAdapter = CharacterAdapter(emptyList())
+        rvCharacters.adapter = charAdapter
+
         val episode = arguments?.getParcelable<Episode>("episode_data")
 
         if (episode != null) {
             setupUI(episode)
-            checkIfEpisodeIsViewed(episode.id.toString()) // Comprobar estado real en la nube
+            checkIfEpisodeIsViewed(episode.id.toString())
         }
 
         return view
@@ -52,37 +64,47 @@ class EpisodeDetailFragment : Fragment() {
         tvCode.text = episode.episode
         tvDate.text = episode.airDate
 
-        // Listener del Switch: Se activa cuando el usuario toca
         switchViewed.setOnCheckedChangeListener { _, isChecked ->
             saveViewedState(episode, isChecked)
         }
+
+        loadCharacters(episode.characters)
     }
 
-    // 1. COMPROBAR EN LA NUBE SI YA ESTABA VISTO
+    private fun loadCharacters(urls: List<String>) {
+        if (urls.isEmpty()) return
+
+        val ids = urls.map { url ->
+            url.substringAfterLast("/")
+        }.joinToString(",")
+
+        RetrofitClient.apiService.getMultipleCharacters(ids).enqueue(object : Callback<List<com.example.rickymortyapp.models.Character>> {
+            override fun onResponse(
+                call: Call<List<com.example.rickymortyapp.models.Character>>,
+                response: Response<List<com.example.rickymortyapp.models.Character>>
+            ) {
+                if (response.isSuccessful) {
+                    val charList = response.body() ?: emptyList()
+                    charAdapter.updateList(charList)
+                }
+            }
+
+            override fun onFailure(call: Call<List<com.example.rickymortyapp.models.Character>>, t: Throwable) {
+                // Silencio
+            }
+        })
+    }
+
     private fun checkIfEpisodeIsViewed(episodeId: String) {
         val userId = auth.currentUser?.uid ?: return
 
-        // Ruta: users -> {uid} -> viewed_episodes -> {episodeId}
         db.collection("users").document(userId)
             .collection("viewed_episodes").document(episodeId)
             .get()
             .addOnSuccessListener { document ->
-                // Si el documento existe, es que está visto.
-                // Ponemos el switch a true/false SIN disparar el listener de nuevo (truco visual)
                 switchViewed.setOnCheckedChangeListener(null)
                 switchViewed.isChecked = document.exists()
-                switchViewed.setOnCheckedChangeListener { _, isChecked ->
-                    // Volvemos a activar el listener
-                    // (Necesitamos el objeto episode aquí, pero como esta función es llamada
-                    // desde onCreateView donde tenemos 'episode', lo ideal es refactorizar un poco.
-                    // Para simplificar, usaremos el argumento global o pasamos el episodio a esta función)
 
-                    // Nota: Para corregir el ámbito, mira la función saveViewedState abajo.
-                    // Simplemente reactivamos el listener genérico aquí es complicado sin el objeto.
-                    // MEJOR ESTRATEGIA: No quitar el listener, pero controlar el bucle.
-                }
-
-                // RE-VINCULAMOS EL LISTENER CORRECTAMENTE CON EL EPISODIO
                 val episode = arguments?.getParcelable<Episode>("episode_data")
                 if (episode != null) {
                     switchViewed.setOnCheckedChangeListener { _, isChecked ->
@@ -92,15 +114,12 @@ class EpisodeDetailFragment : Fragment() {
             }
     }
 
-    // 2. GUARDAR O BORRAR EN FIRESTORE
     private fun saveViewedState(episode: Episode, isViewed: Boolean) {
         val userId = auth.currentUser?.uid ?: return
         val userDocRef = db.collection("users").document(userId)
         val episodeDocRef = userDocRef.collection("viewed_episodes").document(episode.id.toString())
 
         if (isViewed) {
-            // A) Si marcamos como visto -> CREAMOS EL DOCUMENTO
-            // Guardamos datos útiles para estadísticas (Apartado F)
             val data = hashMapOf(
                 "id" to episode.id,
                 "name" to episode.name,
@@ -108,20 +127,16 @@ class EpisodeDetailFragment : Fragment() {
                 "air_date" to episode.airDate,
                 "viewed_at" to System.currentTimeMillis()
             )
-
             episodeDocRef.set(data, SetOptions.merge())
                 .addOnSuccessListener {
-                    Toast.makeText(context, "Marcado como visto ✅", Toast.LENGTH_SHORT).show()
-                }
-                .addOnFailureListener { e ->
-                    Toast.makeText(context, "Error al guardar: ${e.message}", Toast.LENGTH_SHORT).show()
-                    switchViewed.isChecked = false // Revertir switch
+                    // CORREGIDO: Mensaje traducible
+                    Toast.makeText(context, getString(R.string.detail_viewed_toast), Toast.LENGTH_SHORT).show()
                 }
         } else {
-            // B) Si desmarcamos -> BORRAMOS EL DOCUMENTO
             episodeDocRef.delete()
                 .addOnSuccessListener {
-                    Toast.makeText(context, "Marcado como NO visto ❌", Toast.LENGTH_SHORT).show()
+                    // CORREGIDO: Mensaje traducible
+                    Toast.makeText(context, getString(R.string.detail_not_viewed_toast), Toast.LENGTH_SHORT).show()
                 }
         }
     }

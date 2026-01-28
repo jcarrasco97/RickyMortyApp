@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#0B1E2D"
-    android:fillViewport="true">
+    android:background="@color/app_background">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -16,63 +15,65 @@
             android:id="@+id/tvDetailName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Nombre del Episodio"
-            android:textColor="#00FF9C"
+            android:text="Nombre Episodio"
+            android:textColor="@color/primary_text"
             android:textSize="28sp"
             android:textStyle="bold"
-            android:gravity="center"
             android:layout_marginBottom="8dp"/>
-
-        <View
-            android:layout_width="100dp"
-            android:layout_height="2dp"
-            android:background="#00FF9C"
-            android:layout_gravity="center"
-            android:layout_marginBottom="24dp"/>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:gravity="center"
-            android:layout_marginBottom="32dp">
+            android:layout_marginBottom="24dp">
 
             <TextView
                 android:id="@+id/tvDetailCode"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="S01E01"
-                android:textColor="#FFFFFF"
-                android:background="@drawable/bg_rounded_border"
-                android:padding="8dp"
-                android:textSize="16sp"/>
+                android:textColor="@color/secondary_text"
+                android:textSize="16sp"
+                android:layout_marginEnd="16dp"/>
+
             <TextView
                 android:id="@+id/tvDetailDate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="December 2, 2013"
-                android:textColor="#AAAAAA"
-                android:textSize="16sp"
-                android:layout_marginStart="16dp"/>
+                android:text="Date"
+                android:textColor="@color/secondary_text"
+                android:textSize="16sp"/>
         </LinearLayout>
 
-        <com.google.android.material.switchmaterial.SwitchMaterial
-            android:id="@+id/switchViewed"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Marcar como visto"
-            android:textColor="#FFFFFF"
-            android:textSize="18sp"
-            android:checked="false"
-            app:thumbTint="#00FF9C"
-            app:trackTint="#555555"
-            android:layout_marginBottom="32dp"/>
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:background="@color/card_background"
+            android:padding="16dp"
+            android:layout_marginBottom="32dp">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/detail_mark_viewed"
+                android:textColor="@color/primary_text"
+                android:textSize="18sp"/>
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/switchViewed"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:thumbTint="@color/rick_green"
+                app:trackTint="@color/secondary_text"/>
+        </LinearLayout>
 
         <TextView
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Personajes"
-            android:textColor="#FFEB3B"
+            android:text="@string/detail_characters"
+            android:textColor="@color/primary_text"
             android:textSize="20sp"
             android:textStyle="bold"
             android:layout_marginBottom="16dp"/>
@@ -82,5 +83,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:nestedScrollingEnabled="false"/>
+
     </LinearLayout>
-</androidx.core.widget.NestedScrollView>
+</ScrollView>

@@ -5,32 +5,32 @@
         <item
             android:id="@+id/nav_episodes"
             android:icon="@android:drawable/ic_menu_view"
-            android:title="Episodios" />
+            android:title="@string/menu_episodes" />
         <item
             android:id="@+id/nav_stats"
             android:icon="@android:drawable/ic_menu_sort_by_size"
-            android:title="Estadísticas" />
+            android:title="@string/menu_stats" />
         <item
             android:id="@+id/nav_settings"
             android:icon="@android:drawable/ic_menu_preferences"
-            android:title="Ajustes" />
+            android:title="@string/menu_settings" />
     </group>
 
-    <item android:title="Información">
+    <item android:title="@string/menu_info">
         <menu>
             <item
                 android:id="@+id/nav_about"
                 android:icon="@android:drawable/ic_menu_info_details"
-                android:title="Acerca de" />
+                android:title="@string/menu_about" />
         </menu>
     </item>
 
-    <item android:title="Cuenta">
+    <item android:title="@string/menu_account">
         <menu>
             <item
                 android:id="@+id/nav_logout"
                 android:icon="@android:drawable/ic_lock_power_off"
-                android:title="Cerrar sesión" />
+                android:title="@string/menu_logout" />
         </menu>
     </item>
 </menu>
