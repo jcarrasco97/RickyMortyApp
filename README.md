@@ -43,7 +43,7 @@ Además de los requisitos básicos, quise ir un poco más allá para asegurar un
 
 ---
 
-## 📸 Así se ve la App
+## Así se ve la App
 
 *(Aquí puedes ver cómo cambia la interfaz según el tema elegido)*
 
