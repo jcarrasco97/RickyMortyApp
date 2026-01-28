@@ -53,7 +53,7 @@ Además de los requisitos básicos, quise ir un poco más allá para asegurar un
 
 | Estadísticas | Ajustes (Modo Claro) | Selección Múltiple |
 |:---:|:---:|:---:|
-| ![Stats](screenshots/stats.png) | ![Settings](screenshots/settings_light.png) | ![Batch](screenshots/batch.png) |
+| ![Stats](screenshots/stats.png) | ![Settings](screenshots/settings.png) | ![Batch](screenshots/batch.png) |
 
 ---
 
